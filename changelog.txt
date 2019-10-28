@@ -1,9 +1,23 @@
 
-2019-10-04 Ivo Gjorgjievski
+
+2019-10-04 
+Ivo Gjorgjievski
 Release version 1.0
 
-2019-10-06 Ivo Gjorgjievski
+
+2019-10-06 
+Ivo Gjorgjievski
 Release version 1.1
 Minor code changes, compiled also binaries for Unix (FreeBSD).
+
+
+2019-10-28
+Ivo Gjorgjievski
+Release version 1.2
+- The temporary files are written now in specified folder, not in subfolder.
+- Removed temporary folder functions.
+- Time calculation in hours, minutes, seconds, 00:00:00
+- Minor code changes.
+- Overwrite with user interface in C#.
 
 

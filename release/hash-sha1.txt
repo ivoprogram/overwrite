@@ -1,0 +1,11 @@
+//
+// File Checksum Integrity Verifier version 2.05.
+//
+eba2f93a37bdcb02c4be9cbb9351cadb83827768 .\overwrite-linux-x86-32
+4ffb47df5957bbdabc2bf59994f193da0f9da6e6 .\overwrite-linux-x86-64
+07787f0305a840fce576b01529e80b283f77b46d .\overwrite-unix-x86-32
+e97dd0c056c6ee9426b396735f63b9fef673d0b8 .\overwrite-unix-x86-64
+b336236f98bb5d274c8b80856e16eaaa21226c88 .\overwrite-windows-x86-32-ui.exe
+1dba863cb338f94e42458b36ac1b442ef0ae209d .\overwrite-windows-x86-32.exe
+639bf7fa7ad078e2cc05808fb7742f9fcec748e2 .\overwrite-windows-x86-64-ui.exe
+96df8358f85999613b7fcfd27ed739979ac8ccde .\overwrite-windows-x86-64.exe
