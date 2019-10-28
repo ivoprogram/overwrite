@@ -4,7 +4,7 @@ Overwrite is a program that overwrites empty space on disk.
 **Documentation:** \
 [https://ivoprogram.github.io?content=overwrite.html](https://ivoprogram.github.io?content=overwrite.html)
 
-![Overwrite](images/overwrite-windows-ui.png.png)
+![Overwrite](images/overwrite-windows-ui.png)
 
 The empty space on disks can contain sensitive data and information that can be recovered with recovery software and forensics, this can be security and privacy risk. \
 To protect privacy and security the remaining data on empty space on disks has to be overwritten.
