@@ -17,6 +17,7 @@ Release version 1.2
 - The temporary files are written now in specified folder, not in subfolder.
 - Removed temporary folder functions.
 - Time calculation in hours, minutes, seconds, 00:00:00
+- Add support for -files:all to overwrite all metadata.
 - Minor code changes.
 - Overwrite with user interface in C#.
 
