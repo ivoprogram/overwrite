@@ -4,7 +4,7 @@ Overwrite is a program that overwrites empty space on disk.
 **Documentation:** \
 [https://ivoprogram.github.io?content=overwrite.html](https://ivoprogram.github.io?content=overwrite.html)
 
-![Overwrite](images/overwrite-linux2.png)
+![Overwrite](images/overwrite-windows-ui.png.png)
 
 The empty space on disks can contain sensitive data and information that can be recovered with recovery software and forensics, this can be security and privacy risk. \
 To protect privacy and security the remaining data on empty space on disks has to be overwritten.
@@ -20,7 +20,7 @@ To protect privacy and security the remaining data on empty space on disks has t
 overwrite -files:10 -data:10mb -path:c:\
 
 // Write random data, block size 512 bytes on Linux \
-overwrite -rand -block:512 -files:10 -data:10mb -path:/mnt/usbdisk/
+overwrite -rand -block:512 -files:10 -path:/mnt/usbdisk/
 
 // Run directly overwrite.c source code with Tiny C compiler \
 tcc -run overwrite.c -h
