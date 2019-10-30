@@ -1,13 +1,13 @@
 ﻿
 /*
 TITLE:			Overwrite
-DESCRIPTION:	Overwrite empty space on disk, write small files and data.
+DESCRIPTION:	Overwrite empty space on disk, metadata and data.
 CODE:			github.com/ivoprogram/overwrite
 LICENSE:		GNU General Public License v3.0 http://www.gnu.org/licenses/gpl.html
 AUTHOR:			Ivo Gjorgjievski
 WEBSITE:		ivoprogram.github.io
-DATE:			2019-10-28
-VERSION:		1.2
+DATE:			2019-10-30
+VERSION:		1.3
 
 */
 
@@ -30,11 +30,11 @@ namespace overwrite_ui
     {
         // 
         byte[] block;           // Block data
-        int blockSize = 4096;   // Block size
-        int files = 0;          // Number of files
-        int filesCont = 0;      // Counter for write and clean
+        int bsize = 4096;       // Block size
+        int dirs = 0;           // Number of dirs
+        int dircont = 0;        // Counter for write and clean
         int data = 0;           // Quantity of data
-        string filePrefix = "000000000-";   // File prefix
+        string prefix = "0";    // File prefix
 
         // 
         public Form1()
@@ -47,9 +47,10 @@ namespace overwrite_ui
         private void Initialize()
         {
             // 
-            textPath.Text = Path.GetTempPath();
             listUnit.SelectedIndex = 0;
             listContent.SelectedIndex = 0;
+            //textPath.Text = Path.GetTempPath();
+
         }
 
         //
@@ -70,17 +71,18 @@ namespace overwrite_ui
 
                 // Prepare, write, clean
                 Prepare();
-                WriteFiles();
+
+                WriteDirs();
+                if (!checkTest.Checked) { CleanDirs(); }
+
                 WriteData();
-                if (!checkTest.Checked)
-                {
-                    CleanData();
-                }
+                if (!checkTest.Checked) { CleanData(); }
 
                 // Done
                 stopwatch.Stop();
                 WriteTime(stopwatch);
                 richTextBox1.AppendText("Done. \n");
+
             }
             catch (Exception exc)
             {
@@ -95,11 +97,9 @@ namespace overwrite_ui
         {
             // Initialize parameters
 
-            blockSize = Convert.ToInt32(listBlock.Text);
-            block = new byte[blockSize];
-
-            if (listFiles.Text == "All") { files = Int32.MaxValue; }
-            else { files = Convert.ToInt32(listFiles.Text); }
+            bsize = Convert.ToInt32(listBlock.Text);
+            block = new byte[bsize];
+            dirs = Convert.ToInt32(listFiles.Text);
 
             if (listData.Text == "All") { data = Int32.MaxValue; }
             else { data = Convert.ToInt32(listData.Text); }
@@ -112,26 +112,24 @@ namespace overwrite_ui
 
 
             // Set data content
-
-            Random rand = new Random(DateTime.Now.Millisecond);
-
             if (listContent.Text == "Zero")
             {
-                for (int index = 0; index < blockSize; index++)
+                for (int index = 0; index < bsize; index++)
                 {
                     block[index] = 0;
                 }
             }
             else if (listContent.Text == "One")
             {
-                for (int index = 0; index < blockSize; index++)
+                for (int index = 0; index < bsize; index++)
                 {
                     block[index] = 255;
                 }
             }
             else // if (listContent.Text == "Random")
             {
-                for (int index = 0; index < blockSize; index++)
+                Random rand = new Random(DateTime.Now.Millisecond);
+                for (int index = 0; index < bsize; index++)
                 {
                     block[index] = (byte)rand.Next(1, 256);
                 }
@@ -139,53 +137,45 @@ namespace overwrite_ui
 
         }
 
-
-        // WriteFiles
-        private void WriteFiles()
+        // WriteDirs
+        private void WriteDirs()
         {
-            int cont = 1000;
             float stat = 0.1F;
 
-            if (files < 1) { return; }
-
-            // Status
-            labelStatus.Text = "0%";
-            progressBar1.Value = 0;
-            richTextBox1.AppendText("Writing files \n");
+            if (dirs == 0) { return; }
 
             try
             {
-                // Write files
-                for (filesCont = 1; filesCont <= files; filesCont++)
+                // Status
+                richTextBox1.AppendText("Writing metadata \n");
+                Progress(0);
+
+                // Write dirs
+                for (dircont = 1; dircont <= dirs; dircont++)
                 {
                     // Write
-                    File.WriteAllBytes(
-                        string.Format("{0}{1}{2}", textPath.Text, filePrefix, filesCont),
-                        block);
+                    Directory.CreateDirectory(
+                        string.Format("{0}{1}{2}", textPath.Text, prefix, dircont)
+                        );
 
                     // Statistic
-                    if (files != Int32.MaxValue && filesCont > files * stat)
+                    if (dirs != Int32.MaxValue && dircont > dirs * stat)
                     {
-                        labelStatus.Text = string.Format("{0:00}%", stat * 100);
-                        progressBar1.Value = Convert.ToInt32(stat * 100);
+                        Progress(Convert.ToInt32(stat * 100));
                         stat += 0.1F;
-                    }
-
-                    if (files == Int32.MaxValue && filesCont > cont)
-                    {
-                        labelStatus.Text = string.Format("{0}Th", cont);
-                        progressBar1.Value = cont;
-                        cont += cont;
                     }
 
                 }// for
 
-                labelStatus.Text = "100%";
-                progressBar1.Value = 100;
+                Progress(100);
+            }
+            catch (UnauthorizedAccessException exc)
+            {
+                throw;
             }
             catch (Exception exc)
             {
-                if (filesCont < 2) { throw; }
+                Progress(100);
             }
 
         }
@@ -200,94 +190,123 @@ namespace overwrite_ui
             int blockscont = 0;
             float stat = 0.1F;
 
-            if (data < 1) { return; }
+            if (data == 0) { return; }
 
             // Status
-            labelStatus.Text = "0%";
-            progressBar1.Value = 0;
             richTextBox1.AppendText("Writing data \n");
+            Progress(0);
 
             // Blocks count
-            blocksmb = (1024 * 1000) / blockSize;
-            blocksgb = (1024 * 1000 * 1000) / blockSize;
+            blocksmb = (1024 * 1000) / bsize;
+            blocksgb = (1024 * 1000 * 1000) / bsize;
             blockscont = blocksgb;
 
-            if (listUnit.Text == "Megabytes") { blocks = data * blocksmb; }
-            if (listUnit.Text == "Gigabytes") { blocks = data * blocksgb; }
+            if (data == Int32.MaxValue) { blocks = Int32.MaxValue; }
+            else if (listUnit.Text == "Megabytes") { blocks = data * blocksmb; }
+            else if (listUnit.Text == "Gigabytes") { blocks = data * blocksgb; }
 
             // Path
-            string path = string.Format("{0}{1}{2}", textPath.Text, filePrefix, "0");
+            string dpath = string.Format("{0}{1}0", textPath.Text, prefix);
+            string fpath = string.Format("{0}\\{1}0", dpath, prefix);
 
-            // Write data
-            using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
+            try
             {
-                //
-                for (int index = 1; index <= blocks; index++)
+
+                // Create temp dir for data file
+                Directory.CreateDirectory(dpath);
+
+                // Write data
+                using (BinaryWriter writer =
+                    new BinaryWriter(File.Open(fpath, FileMode.Create)))
                 {
-                    // Write
-                    writer.Write(block, 0, blockSize);
-
-                    // Statistic
-                    if (blocks != Int32.MaxValue && index > blocks * stat)
+                    //
+                    for (int index = 1; index <= blocks; index++)
                     {
-                        labelStatus.Text = string.Format("{0:00}%", stat * 100);
-                        progressBar1.Value = Convert.ToInt32(stat * 100);
-                        stat += 0.1F;
-                    }
+                        // Write
+                        writer.Write(block, 0, bsize);
 
-                    if (blocks == Int32.MaxValue && index > blockscont && cont < 10)
-                    {
-                        cont++;
-                        labelStatus.Text = string.Format("{0}Gb", cont);
-                        progressBar1.Value = cont;
-                        blockscont += blocksgb;
-                    }
+                        // Statistic
+                        if (blocks != Int32.MaxValue && index > blocks * stat)
+                        {
+                            Progress(Convert.ToInt32(stat * 100));
+                            stat += 0.1F;
+                        }
 
-                }// for
+                        if (blocks == Int32.MaxValue && index > blockscont && cont < 10)
+                        {
+                            cont++;
+                            Progress(cont);
+                            blockscont += blocksgb;
+                        }
 
-            }// using
+                    }// for
+
+                }// using
+
+                // Status
+                Progress(100);
+
+            }
+            catch (UnauthorizedAccessException exc)
+            {
+                throw;
+            }
+            catch (Exception exc)
+            {
+                Progress(100);
+            }
+
+
+        }// 
+
+
+        // CleanDirs
+        private void CleanDirs()
+        {
+            // 
+            int index = 0;
+            float stat = 0.1F;
+
+            //richTextBox1.AppendText("Cleaning \n");
+            //Progress(0);
+
+            // Clean dirs
+            for (index = 1; index < dircont && dirs > 0; index++)
+            {
+                Directory.Delete(
+                    string.Format("{0}{1}{2}", textPath.Text, prefix, index)
+                    );
+
+                //File.Delete(string.Format("{0}{1}{2}", 
+                //    textPath.Text, prefix, index));
+
+                //// Statistic
+                //if (dircont > dirs * stat)
+                //{
+                //    Progress(Convert.ToInt32(stat * 100));
+                //    stat += 0.1F;
+                //}
+
+            }// for
 
             // Status
-            labelStatus.Text = "100%";
-            progressBar1.Value = 100;
-
+            //Progress(100);
         }
 
         // CleanData
         private void CleanData()
         {
-            // 
-            int index = 0;
-            float stat = 0.1F;
-            labelStatus.Text = "0%";
-            progressBar1.Value = 0;
-            richTextBox1.AppendText("Cleaning \n");
+            if (data == 0) { return; }
+
+            // Path
+            string dpath = string.Format("{0}{1}0", textPath.Text, prefix);
+            string fpath = string.Format("{0}\\00", dpath);
 
             // Clean data
-            string path = string.Format("{0}{1}{2}", textPath.Text, filePrefix, "0");
-            File.Delete(path);
+            File.Delete(fpath);
+            Directory.Delete(dpath);
 
-            // Clean files
-            for (index = 1; index <= filesCont && files > 0; index++)
-            {
-                File.Delete(string.Format("{0}{1}{2}", 
-                    textPath.Text, filePrefix, index));
-
-                // Statistic
-                if (filesCont > files * stat)
-                {
-                    labelStatus.Text = string.Format("{0:00}%", stat * 100);
-                    progressBar1.Value = Convert.ToInt32(stat * 100);
-                    stat += 0.1F;
-                }
-
-            }// for
-
-            // Status
-            labelStatus.Text = "100%";
-            progressBar1.Value = 100;
-
-        }
+        }// 
 
         // WriteTime
         private void WriteTime(Stopwatch stopwatch)
@@ -302,6 +321,19 @@ namespace overwrite_ui
 
             richTextBox1.AppendText(time);
 
+        }
+
+        // 
+        private void Progress(int progress)
+        {
+            // Status
+            progressBar1.Value = progress;
+            labelProgress.Text = progress.ToString() + "%";
+
+            // 
+            progressBar1.Refresh();
+            labelProgress.Refresh();
+            richTextBox1.Refresh();
         }
 
         private void buttonPath_Click(object sender, EventArgs e)

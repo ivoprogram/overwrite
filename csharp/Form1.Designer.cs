@@ -43,7 +43,7 @@
             this.textPath = new System.Windows.Forms.TextBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.buttonPath = new System.Windows.Forms.Button();
-            this.labelStatus = new System.Windows.Forms.Label();
+            this.labelProgress = new System.Windows.Forms.Label();
             this.buttonOverwrite = new System.Windows.Forms.Button();
             this.buttonClose = new System.Windows.Forms.Button();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
@@ -102,21 +102,18 @@
             this.label2.Location = new System.Drawing.Point(131, 27);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(37, 17);
+            this.label2.Size = new System.Drawing.Size(67, 17);
             this.label2.TabIndex = 11;
-            this.label2.Text = "Files";
+            this.label2.Text = "Metadata";
             // 
             // listFiles
             // 
             this.listFiles.FormattingEnabled = true;
             this.listFiles.Items.AddRange(new object[] {
+            "0",
             "10",
             "100",
-            "1000",
-            "3000",
-            "5000",
-            "10000",
-            "All"});
+            "1000"});
             this.listFiles.Location = new System.Drawing.Point(19, 23);
             this.listFiles.Margin = new System.Windows.Forms.Padding(4);
             this.listFiles.Name = "listFiles";
@@ -138,7 +135,7 @@
             // 
             this.listData.FormattingEnabled = true;
             this.listData.Items.AddRange(new object[] {
-            "1",
+            "0",
             "10",
             "100",
             "1000",
@@ -204,6 +201,7 @@
             this.textPath.Name = "textPath";
             this.textPath.Size = new System.Drawing.Size(385, 23);
             this.textPath.TabIndex = 19;
+            this.textPath.Text = "C:\\";
             // 
             // progressBar1
             // 
@@ -222,14 +220,14 @@
             this.buttonPath.UseVisualStyleBackColor = true;
             this.buttonPath.Click += new System.EventHandler(this.buttonPath_Click);
             // 
-            // labelStatus
+            // labelProgress
             // 
-            this.labelStatus.AutoSize = true;
-            this.labelStatus.Location = new System.Drawing.Point(410, 211);
-            this.labelStatus.Name = "labelStatus";
-            this.labelStatus.Size = new System.Drawing.Size(28, 17);
-            this.labelStatus.TabIndex = 22;
-            this.labelStatus.Text = "0%";
+            this.labelProgress.AutoSize = true;
+            this.labelProgress.Location = new System.Drawing.Point(409, 213);
+            this.labelProgress.Name = "labelProgress";
+            this.labelProgress.Size = new System.Drawing.Size(28, 17);
+            this.labelProgress.TabIndex = 22;
+            this.labelProgress.Text = "0%";
             // 
             // buttonOverwrite
             // 
@@ -284,7 +282,7 @@
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.buttonOverwrite);
-            this.Controls.Add(this.labelStatus);
+            this.Controls.Add(this.labelProgress);
             this.Controls.Add(this.buttonPath);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.textPath);
@@ -328,7 +326,7 @@
         private System.Windows.Forms.TextBox textPath;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button buttonPath;
-        private System.Windows.Forms.Label labelStatus;
+        private System.Windows.Forms.Label labelProgress;
         private System.Windows.Forms.Button buttonOverwrite;
         private System.Windows.Forms.Button buttonClose;
         private System.Windows.Forms.LinkLabel linkLabel1;
