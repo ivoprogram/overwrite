@@ -629,7 +629,7 @@ void usage()
 		"Write 10 dirs and 10Mb data, on Windows \n"
 		"overwrite -dirs:10 -data:10mb -path:c:\\ \n\n"
 		"Write random data, block size 512 bytes on Linux \n"
-		"overwrite -rand -block:512 -data:10 -path:/mnt/usbdisk/ \n\n"
+		"overwrite -rand -block:512 -data:10mb -path:/mnt/usbdisk/ \n\n"
 		"Copyright GPLv3 http://github.com/ivoprogram/overwrite \n"
 
 		);
