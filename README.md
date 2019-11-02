@@ -25,6 +25,11 @@ overwrite -rand -block:512 -data:10mb -path:/mnt/usbdisk/
 - Run directly overwrite.c source code with Tiny C compiler \
 tcc -run overwrite.c -h
 
+**Issues**
+The issues and testing for this project has been moved to link:
+https://github.com/ivoprogram/overwrite-testing
+
+
 ![Overwrite](images/overwrite-windows-ui.png)
 ![Overwrite](images/overwrite-linux-ui.png)
 ![Overwrite](images/overwrite-linux.png)
