@@ -15,7 +15,7 @@ To protect privacy and security the remaining data on empty space on disks has t
 - Different options can be specified, as block size, number of files, quantity of data.
 - It is free and open source with general public licence.
 
-**Example** \
+**Example**
 - Write 10 dirs and 10Mb data, on Windows \
 overwrite -dirs:10 -data:10mb -path:c:\
 
@@ -25,9 +25,8 @@ overwrite -rand -block:512 -data:10mb -path:/mnt/usbdisk/
 - Run directly overwrite.c source code with Tiny C compiler \
 tcc -run overwrite.c -h
 
-
+![Overwrite](images/overwrite-windows-ui.png)
+![Overwrite](images/overwrite-linux-ui.png)
 ![Overwrite](images/overwrite-linux.png)
 ![Overwrite](images/overwrite-unix.png)
 ![Overwrite](images/overwrite-windows.png)
-![Overwrite](images/overwrite-windows-ui.png)
-![Overwrite](images/overwrite-linux-ui.png)
