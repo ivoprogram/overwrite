@@ -1,13 +1,12 @@
 # Overwrite
-Overwrite is a program that overwrites empty space on disk, metadata and data.
+Overwrite is a program that overwrites empty space on disk data and metadata.
 
 **Documentation:** \
 [https://ivoprogram.github.io?content=overwrite.html](https://ivoprogram.github.io?content=overwrite.html)
 
-![Overwrite](images/overwrite-ui.png)
-![Overwrite](images/overwrite-linux.png)
+![Overwrite](images/overwrite-windows-ui.png)
 
-The empty space on disks can contain sensitive data and information that can be recovered with recovery software and forensics, this can be security and privacy risk. \
+The empty space on disks can contain sensitive data and information that can be recovered with recovery software and forensic, this can be security and privacy risk. \
 To protect privacy and security the remaining data on empty space on disks has to be overwritten.
 
 **Features**
@@ -17,12 +16,18 @@ To protect privacy and security the remaining data on empty space on disks has t
 - It is free and open source with general public licence.
 
 **Example** \
-Write 10 dirs and 10Mb data, on Windows \
+- Write 10 dirs and 10Mb data, on Windows \
 overwrite -dirs:10 -data:10mb -path:c:\
 
-// Write random data, block size 512 bytes on Linux \
+- Write random data, block size 512 bytes on Linux \
 overwrite -rand -block:512 -data:10mb -path:/mnt/usbdisk/
 
-Run directly overwrite.c source code with Tiny C compiler \
+- Run directly overwrite.c source code with Tiny C compiler \
 tcc -run overwrite.c -h
 
+
+![Overwrite](images/overwrite-linux.png)
+![Overwrite](images/overwrite-unix.png)
+![Overwrite](images/overwrite-windows.png)
+![Overwrite](images/overwrite-windows-ui.png)
+![Overwrite](images/overwrite-linux-ui.png)
