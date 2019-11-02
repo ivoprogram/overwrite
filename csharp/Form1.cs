@@ -1,13 +1,12 @@
 ﻿
 /*
 TITLE:			Overwrite
-DESCRIPTION:	Overwrite empty space on disk, metadata and data.
+DESCRIPTION:	Overwrite empty space on disk data and metadata.
 CODE:			github.com/ivoprogram/overwrite
 LICENSE:		GNU General Public License v3.0 http://www.gnu.org/licenses/gpl.html
 AUTHOR:			Ivo Gjorgjievski
 WEBSITE:		ivoprogram.github.io
-DATE:			2019-10-30
-VERSION:		1.3
+VERSION:		1.4 2019-11-02
 
 */
 
@@ -49,7 +48,7 @@ namespace overwrite_ui
             // 
             listUnit.SelectedIndex = 0;
             listContent.SelectedIndex = 0;
-            //textPath.Text = Path.GetTempPath();
+            textPath.Text = Path.GetTempPath();
 
         }
 
@@ -69,34 +68,32 @@ namespace overwrite_ui
                 stopwatch.Start();
                 richTextBox1.Clear();
 
-                // Prepare, write, clean
+                // Prepare 
                 Prepare();
 
-                WriteDirs();
-                if (!checkTest.Checked) { CleanDirs(); }
-
+                // Write data
                 WriteData();
                 if (!checkTest.Checked) { CleanData(); }
+
+                // Write dirs
+                WriteDirs();
+                if (!checkTest.Checked) { CleanDirs(); }
 
                 // Done
                 stopwatch.Stop();
                 WriteTime(stopwatch);
-                richTextBox1.AppendText("Done. \n");
+                richTextBox1.AppendText(" Done. \n");
 
             }
             catch (Exception exc)
             {
-                richTextBox1.AppendText(exc.Message);
+                richTextBox1.AppendText(" " + exc.Message);
             }
+        }// 
 
-
-        }
-
-        // Prepare
+        // Initialize parameters
         private void Prepare()
         {
-            // Initialize parameters
-
             bsize = Convert.ToInt32(listBlock.Text);
             block = new byte[bsize];
             dirs = Convert.ToInt32(listFiles.Text);
@@ -107,7 +104,7 @@ namespace overwrite_ui
             //
             if (!textPath.Text.EndsWith("\\") && !textPath.Text.EndsWith("/"))
             {
-                textPath.Text += "\\";
+                textPath.Text += "/";
             }
 
 
@@ -135,19 +132,19 @@ namespace overwrite_ui
                 }
             }
 
-        }
+        }// 
 
-        // WriteDirs
+        // Write directories
         private void WriteDirs()
         {
-            float stat = 0.1F;
+            float prog = 0.1F; // Progress
 
             if (dirs == 0) { return; }
 
             try
             {
                 // Status
-                richTextBox1.AppendText("Writing metadata \n");
+                richTextBox1.AppendText(" Writing metadata \n");
                 Progress(0);
 
                 // Write dirs
@@ -159,10 +156,10 @@ namespace overwrite_ui
                         );
 
                     // Statistic
-                    if (dirs != Int32.MaxValue && dircont > dirs * stat)
+                    if (dirs != Int32.MaxValue && dircont > dirs * prog)
                     {
-                        Progress(Convert.ToInt32(stat * 100));
-                        stat += 0.1F;
+                        Progress(Convert.ToInt32(prog * 100));
+                        prog += 0.1F;
                     }
 
                 }// for
@@ -180,20 +177,20 @@ namespace overwrite_ui
 
         }
 
-        // WriteData
+        // Write data
         private void WriteData()
         {
-            int cont = 0;
-            int blocks = 0;
-            int blocksmb = 0;
-            int blocksgb = 0;
-            int blockscont = 0;
-            float stat = 0.1F;
+            int blocks = 0;         // Number of blocks to write
+            int blocksmb = 0;       // Blocks per megabyte
+            int blocksgb = 0;       // Blocks per gigabyte
+            int blockscont = 0;     // Blocks count for statistic
+            int blockscont2 = 0;    // Blocks count for statistic
+            float prog = 0.1F;      // Progress
 
             if (data == 0) { return; }
 
             // Status
-            richTextBox1.AppendText("Writing data \n");
+            richTextBox1.AppendText(" Writing data \n");
             Progress(0);
 
             // Blocks count
@@ -207,11 +204,10 @@ namespace overwrite_ui
 
             // Path
             string dpath = string.Format("{0}{1}0", textPath.Text, prefix);
-            string fpath = string.Format("{0}\\{1}0", dpath, prefix);
+            string fpath = string.Format("{0}/{1}0", dpath, prefix);
 
             try
             {
-
                 // Create temp dir for data file
                 Directory.CreateDirectory(dpath);
 
@@ -226,17 +222,17 @@ namespace overwrite_ui
                         writer.Write(block, 0, bsize);
 
                         // Statistic
-                        if (blocks != Int32.MaxValue && index > blocks * stat)
+                        if (blocks != Int32.MaxValue && index > blocks * prog)
                         {
-                            Progress(Convert.ToInt32(stat * 100));
-                            stat += 0.1F;
+                            Progress(Convert.ToInt32(prog * 100));
+                            prog += 0.1F;
                         }
 
-                        if (blocks == Int32.MaxValue && index > blockscont && cont < 10)
+                        if (blocks == Int32.MaxValue && index > blockscont && blockscont2 < 10)
                         {
-                            cont++;
-                            Progress(cont);
                             blockscont += blocksgb;
+                            blockscont2++;
+                            Progress(blockscont2);
                         }
 
                     }// for
@@ -260,12 +256,12 @@ namespace overwrite_ui
         }// 
 
 
-        // CleanDirs
+        // Clean directories
         private void CleanDirs()
         {
             // 
             int index = 0;
-            float stat = 0.1F;
+            float prog = 0.1F;
 
             //richTextBox1.AppendText("Cleaning \n");
             //Progress(0);
@@ -281,10 +277,10 @@ namespace overwrite_ui
                 //    textPath.Text, prefix, index));
 
                 //// Statistic
-                //if (dircont > dirs * stat)
+                //if (dircont > dirs * prog)
                 //{
-                //    Progress(Convert.ToInt32(stat * 100));
-                //    stat += 0.1F;
+                //    Progress(Convert.ToInt32(prog * 100));
+                //    prog += 0.1F;
                 //}
 
             }// for
@@ -293,14 +289,14 @@ namespace overwrite_ui
             //Progress(100);
         }
 
-        // CleanData
+        // Clean data
         private void CleanData()
         {
             if (data == 0) { return; }
 
             // Path
             string dpath = string.Format("{0}{1}0", textPath.Text, prefix);
-            string fpath = string.Format("{0}\\00", dpath);
+            string fpath = string.Format("{0}/00", dpath);
 
             // Clean data
             File.Delete(fpath);
@@ -312,7 +308,7 @@ namespace overwrite_ui
         private void WriteTime(Stopwatch stopwatch)
         {
             string time = string.Format(
-                "Time: {0}:{1}:{2}.{3} \n",
+                " Time: {0:00}:{1:00}:{2:00}.{3} \n",
                 stopwatch.Elapsed.Hours,
                 stopwatch.Elapsed.Minutes,
                 stopwatch.Elapsed.Seconds,
