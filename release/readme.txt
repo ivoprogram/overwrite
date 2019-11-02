@@ -12,6 +12,6 @@ overwrite-windows-x86-32.exe
 overwrite-windows-x86-64.exe
 
 Windows, Linux graphical user interface
-Required .net framework 2.0 on Windows, mono-complete package on Linux.
+Require: .net framework 2.0 on Windows, mono-complete package on Linux.
 overwrite-ui-x86-32.exe
 overwrite-ui-x86-64.exe
