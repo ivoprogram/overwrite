@@ -6,7 +6,7 @@ CODE:			github.com/ivoprogram/overwrite
 LICENSE:		GNU General Public License v3.0 http://www.gnu.org/licenses/gpl.html
 AUTHOR:			Ivo Gjorgjievski
 WEBSITE:		ivoprogram.github.io
-VERSION:		1.4 2019-11-02
+VERSION:		1.4.1 2019-11-03
 
 */
 
@@ -37,7 +37,7 @@ VERSION:		1.4 2019-11-02
 #define BLOCK_SIZE 4096		// Default block size, used in NTFS EXT4.
 #define PATH_LENGTH 4096	// Path buffer size
 #define FILE_PREFIX "0"		// File prefix for temporary files.
-#define VERSION "Version 1.4 2019-11-02"	// Program version
+#define VERSION "Version 1.4.1 2019-11-03"	// Program version
 
 
 // Arguments structure
@@ -74,7 +74,6 @@ int strnicmp2(const char *str1, const char *str2, int len);
 
 void errmsg(struct args argsv, char *message);
 void exitmsg(struct args argsv, char *message);
-void exitmsg2(struct args *argsv, char *message);
 void exiterr(struct args argsv, char *message);
 void errcheckint(int res, struct args argsv, char *message);
 void errcheckptr(void *res, struct args argsv, char *message);
@@ -196,6 +195,12 @@ struct args parseargs(int argc, char *argv[])
 		exitmsg(argsv, "Error, argument -path: is missing.");
 	}
 
+	// Check if path is less than PATH_LENGTH
+	if(strlen(argsv.path) > PATH_LENGTH)
+	{
+		exitmsg(argsv, "Path is too long, parameter -path: \n");
+	}
+
 	// Initialize blockbuf with calloc, set with 0.
 	argsv.blockbuf = (unsigned char*) calloc(argsv.blocksize, sizeof (unsigned char));
 	errcheckptr(argsv.blockbuf, argsv, "Block buffer initialization error. ");
@@ -305,7 +310,7 @@ struct args writedata(struct args argsv)
 	}
 
 	// Open file
-	strcat(argsv.pathbuf, "\\0");
+	strcat(argsv.pathbuf, "/0");
 	fp = fopen(argsv.pathbuf, "wb");
 	if(fp == NULL){ argsv.res = -1; return argsv; }
 
@@ -401,7 +406,7 @@ struct args cleandata(struct args argsv)
 	int res = 0;	// Response
 
 	// Delete data file
-	getpath(&argsv, "0\\0");
+	getpath(&argsv, "0/0");
 	res = remove(argsv.pathbuf);
 	if(res != 0){ argsv.res = -1; return argsv; }
 
@@ -441,12 +446,6 @@ void freemem(struct args argsv)
 // Using struct pointer for performance, will be called in loop
 void getpath(struct args *argsv, const char *suffix)
 {
-	// Check if path is less than PATH_LENGTH
-	if(strlen(argsv->path) > PATH_LENGTH)
-	{
-		exitmsg2(argsv, "Path is too long, parameter -path: \n");
-	}
-
 	// Add path to buffer, slash, prefix, suffix
 	strcpy(argsv->pathbuf, argsv->path);
 	if(!strendi(argsv->pathbuf, "/") && !strendi(argsv->pathbuf, "\\")){
@@ -559,15 +558,6 @@ void exitmsg(struct args argsv, char *message)
 	printf("%s \n", message);
 	freemem(argsv);
 	exit(0);
-
-}// 
-
-
-// Exit with message
-void exitmsg2(struct args *argsv, char *message)
-{
-	struct args argsv2 = *argsv;
-	exitmsg(argsv2, message);
 
 }// 
 
