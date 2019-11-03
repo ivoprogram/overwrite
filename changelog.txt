@@ -38,5 +38,6 @@ Ivo Gjorgjievski
 Ivo Gjorgjievski
 - Changed path delimiter from \\ to / in overwrite.c for code to be similar with C# in Form1.cs, this is not bug, worked in windows and linux.
 - Check path length moved from getpath() to parseargs(), this is not bug.
+- Renamed Form1.cs to overwrite.cs, this is C# UI version of overwrite program.
 
 
