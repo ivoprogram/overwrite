@@ -1,19 +1,16 @@
 
 
-2019-10-04 
+1.0 2019-10-04 
 Ivo Gjorgjievski
-Release version 1.0
+Overwrite program overwrite empty space on disk
 
-
-2019-10-06 
+1.1 2019-10-06 
 Ivo Gjorgjievski
-Release version 1.1
 Minor code changes, compiled also binaries for Unix (FreeBSD).
 
 
-2019-10-28
+1.2 2019-10-28
 Ivo Gjorgjievski
-Release version 1.2
 - The temporary files are written now in specified folder, not in subfolder.
 - Removed temporary folder functions.
 - Time calculation in hours, minutes, seconds, 00:00:00
@@ -22,9 +19,8 @@ Release version 1.2
 - Overwrite with user interface in C#.
 
 
-2019-10-30
+1.3 2019-10-30
 Ivo Gjorgjievski
-Release version 1.3
 - Now writing directories instead of small files, for efficency safety performance.
 - Removed -files:all parameter, the metadata should not be filled all, side effects on NTFS.
 - Renamed -files parameter with -dirs, now writing dirs for metadata overwrite.
@@ -32,10 +28,15 @@ Release version 1.3
 - Fixed -data:all parameter for overwrite-ui.
 
 
-2019-11-02
+1.4 2019-11-02
 Ivo Gjorgjievski
-Release version 1.4
 - Graphical user interface overwrite-ui.exe now work on Windows and Linux.
-- When overwriting now first write data then metadata, to remove trace of data file.
+- When overwriting now first write data then metadata, to clean trace of data file.
 - Fixed path buffer possible overflow from very long path, as reported by others.
+
+1.4.1 2019-11-03
+Ivo Gjorgjievski
+- Changed path delimiter from \\ to / in overwrite.c for code to be similar with C# in Form1.cs, this is not bug, worked in windows and linux.
+- Check path length moved from getpath() to parseargs(), this is not bug.
+
 
