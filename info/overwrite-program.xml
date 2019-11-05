@@ -101,7 +101,7 @@
       <Application_Order_URL>https://ivoprogram.github.io/?content=overwrite.html</Application_Order_URL>
       <Application_Screenshot_URL>https://ivoprogram.github.io/images/overwrite-ui.png</Application_Screenshot_URL>
       <Application_Icon_URL>http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/32/Actions-document-edit-icon.png</Application_Icon_URL>
-      <Application_XML_File_URL>https://github.com/ivoprogram/overwrite/raw/master/info/Overwrite_pad.xml</Application_XML_File_URL>
+      <Application_XML_File_URL>https://github.com/ivoprogram/overwrite/raw/master/info/overwrite-program.xml</Application_XML_File_URL>
     </Application_URLs>
     <Download_URLs>
       <Primary_Download_URL>https://github.com/ivoprogram/overwrite/archive/ver1.4-2019-11-02.zip</Primary_Download_URL>
@@ -114,7 +114,7 @@
     <English>
       <Keywords>Data erasure, Data clearing, Data wiping, Data destruction, Overwriting, Sanitization</Keywords>
       <Char_Desc_45>Overwrites empty space on disk data metadata</Char_Desc_45>
-      <Char_Desc_80>Overwrite Program is a program that overwrites empty space on disk, data and metadata.</Char_Desc_80>
+      <Char_Desc_80>Overwrite Program is a program that overwrites empty space on disk.</Char_Desc_80>
       <Char_Desc_250>Overwrites empty space on disk that can contain sensitive data and information that can be recovered with recovery software and forensic, this can be privacy and security risk.</Char_Desc_250>
       <Char_Desc_450>Overwrite Program is a program that overwrites empty space on disk, data and metadata.   The operating systems and programs automatically write and delete data on disk, for example text editors may save copies of the document for recovery and later delete them. Also when users delete files they are only marked as deleted but the files remain on disk and can be recovered.  To protect privacy and security the remaining data has to be overwritten.</Char_Desc_450>
       <Char_Desc_2000>Overwrite Program is a program that overwrites empty space on disk, data and metadata. 
