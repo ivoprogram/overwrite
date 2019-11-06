@@ -112,7 +112,7 @@
   </Web_Info>
   <Program_Descriptions>
     <English>
-      <Keywords>Data erasure, Data clearing, Data wiping, Data destruction, Overwriting, Sanitization, Anti Forensic,</Keywords>
+      <Keywords>Data erasure, Data clearing, Data wiping, Data destruction, Overwriting, Sanitization, Anti Forensic</Keywords>
       <Char_Desc_45>Overwrites empty space on disk data metadata</Char_Desc_45>
       <Char_Desc_80>Overwrite Program is a program that overwrites empty space on disk.</Char_Desc_80>
       <Char_Desc_250>Overwrites empty space on disk that can contain sensitive data and information that can be recovered with recovery software and forensic, this can be privacy and security risk.</Char_Desc_250>
