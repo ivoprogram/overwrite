@@ -99,7 +99,7 @@
     <Application_URLs>
       <Application_Info_URL>http://ivoprogram.github.io/?content=overwrite.html</Application_Info_URL>
       <Application_Order_URL>http://ivoprogram.github.io/?content=overwrite.html</Application_Order_URL>
-      <Application_Screenshot_URL>http://github.com/ivoprogram/overwrite/raw/master/images/overwrite-windows-ui.png</Application_Screenshot_URL>
+      <Application_Screenshot_URL>http://ivoprogram.github.io/images/overwrite-windows-ui.png</Application_Screenshot_URL>
       <Application_Icon_URL>http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/32/Actions-document-edit-icon.png</Application_Icon_URL>
       <Application_XML_File_URL>http://github.com/ivoprogram/overwrite/raw/master/info/overwrite-program.xml</Application_XML_File_URL>
     </Application_URLs>
