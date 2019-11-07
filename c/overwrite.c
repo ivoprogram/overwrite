@@ -6,7 +6,7 @@ CODE:			github.com/ivoprogram/overwrite
 LICENSE:		GNU General Public License v3.0 http://www.gnu.org/licenses/gpl.html
 AUTHOR:			Ivo Gjorgjievski
 WEBSITE:		ivoprogram.github.io
-VERSION:		1.4.1 2019-11-03
+VERSION:		1.4.2 2019-11-07
 
 */
 
@@ -34,10 +34,10 @@ VERSION:		1.4.1 2019-11-03
 
 
 // Definitions -----
-#define BLOCK_SIZE 4096		// Default block size, used in NTFS EXT4.
+#define BLOCK_SIZE 4096		// Default block size, used in NTFS EXT4
 #define PATH_LENGTH 4096	// Path buffer size
-#define FILE_PREFIX "0"		// File prefix for temporary files.
-#define VERSION "Version 1.4.1 2019-11-03"	// Program version
+#define FILE_SUFFIX ""		// File suffix for temp dirs, for testing long file names
+#define VERSION "Version 1.4.2 2019-11-07"	// Program version
 
 
 // Arguments structure
@@ -63,7 +63,7 @@ struct args cleandirs(struct args argsv);
 struct args cleandata(struct args argsv);
 void freemem(struct args argsv);
 
-void getpath(struct args *argsv, const char *suffix);
+void getpath(struct args *argsv, const char *prefix);
 int makedir(const char* name);
 int remdir(const char* name);
 void printtime(clock_t ticks);
@@ -178,8 +178,12 @@ struct args parseargs(int argc, char *argv[])
 	// Check for space in args
 	for(index = 0; index < argc; index++)
 	{
-		if(strendi(argv[index], ":")){
-			exitmsg(argsv, "Error, arguments contain space or ends with : ");
+		if(strstarti(argv[index], "-block: ") ||
+			strstarti(argv[index], "-dirs: ") ||
+			strstarti(argv[index], "-data: ") ||
+			strstarti(argv[index], "-path: ")
+			){
+				exitmsg(argsv, "Error, arguments contain space after :");
 		}
 	}
 
@@ -224,7 +228,7 @@ struct args writedirs(struct args argsv)
 	int index = 0;		// Index
 	int res = 0;		// Response
 	float prog = 0.1F;	// Progress
-	char stri[16];		// Dir name
+	char stri[64];		// Dir name
 
 
 	// If dirs 0 return
@@ -365,7 +369,7 @@ struct args cleandirs(struct args argsv)
 	int index;					// Index
 	int res;					// Response
 	float prog = 0.1F;			// Progress
-	char stri[16];				// Dir name
+	char stri[64];				// Dir name
 
 	//
 	//printf("Cleaning: \n");
@@ -442,17 +446,26 @@ void freemem(struct args argsv)
 // Util functions ---------------------
 
 
-// Get path + FILE_PREFIX + suffix
+// Get path + FILE_SUFFIX + prefix
 // Using struct pointer for performance, will be called in loop
-void getpath(struct args *argsv, const char *suffix)
+void getpath(struct args *argsv, const char *prefix)
 {
-	// Add path to buffer, slash, prefix, suffix
+	// Add to buffer path, slash, prefix, suffix
 	strcpy(argsv->pathbuf, argsv->path);
+
+	// Add / at the end of path if not present, windows unix
+#ifdef _WIN32	//  __linux__
 	if(!strendi(argsv->pathbuf, "/") && !strendi(argsv->pathbuf, "\\")){
 		strcat(argsv->pathbuf, "/");
 	}
-	strcat(argsv->pathbuf, FILE_PREFIX);
-	strcat(argsv->pathbuf, suffix);
+#else      
+	if(!strendi(argsv->pathbuf, "/")){
+		strcat(argsv->pathbuf, "/");
+	}
+#endif
+
+	strcat(argsv->pathbuf, prefix);
+	strcat(argsv->pathbuf, FILE_SUFFIX);
 
 }// 
 
