@@ -6,7 +6,7 @@ CODE:			github.com/ivoprogram/overwrite
 LICENSE:		GNU General Public License v3.0 http://www.gnu.org/licenses/gpl.html
 AUTHOR:			Ivo Gjorgjievski
 WEBSITE:		ivoprogram.github.io
-VERSION:		1.4.1 2019-11-03
+VERSION:		1.4.2 2019-11-07
 
 */
 
@@ -34,6 +34,7 @@ namespace overwrite_ui
         int dircont = 0;        // Counter for write and clean
         int data = 0;           // Quantity of data
         string prefix = "0";    // File prefix
+        string path;            // Path where to overwrite
 
         // 
         public overwrite()
@@ -102,9 +103,19 @@ namespace overwrite_ui
             else { data = Convert.ToInt32(listData.Text); }
 
             //
-            if (!textPath.Text.EndsWith("\\") && !textPath.Text.EndsWith("/"))
+            path = textPath.Text;
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                textPath.Text += "/";
+                if (!path.EndsWith("/") && !path.EndsWith("\\"))
+                {
+                    path += "/";
+                }
+            }
+            else {
+                if (!path.EndsWith("/"))
+                {
+                    path += "/";
+                }         
             }
 
 
@@ -152,7 +163,7 @@ namespace overwrite_ui
                 {
                     // Write
                     Directory.CreateDirectory(
-                        string.Format("{0}{1}{2}", textPath.Text, prefix, dircont)
+                        string.Format("{0}{1}{2}", path, prefix, dircont)
                         );
 
                     // Statistic
@@ -203,7 +214,7 @@ namespace overwrite_ui
             else if (listUnit.Text == "Gigabytes") { blocks = data * blocksgb; }
 
             // Path
-            string dpath = string.Format("{0}{1}0", textPath.Text, prefix);
+            string dpath = string.Format("{0}{1}0", path, prefix);
             string fpath = string.Format("{0}/{1}0", dpath, prefix);
 
             try
@@ -270,11 +281,11 @@ namespace overwrite_ui
             for (index = 1; index < dircont && dirs > 0; index++)
             {
                 Directory.Delete(
-                    string.Format("{0}{1}{2}", textPath.Text, prefix, index)
+                    string.Format("{0}{1}{2}", path, prefix, index)
                     );
 
                 //File.Delete(string.Format("{0}{1}{2}", 
-                //    textPath.Text, prefix, index));
+                //    path, prefix, index));
 
                 //// Statistic
                 //if (dircont > dirs * prog)
@@ -295,7 +306,7 @@ namespace overwrite_ui
             if (data == 0) { return; }
 
             // Path
-            string dpath = string.Format("{0}{1}0", textPath.Text, prefix);
+            string dpath = string.Format("{0}{1}0", path, prefix);
             string fpath = string.Format("{0}/00", dpath);
 
             // Clean data

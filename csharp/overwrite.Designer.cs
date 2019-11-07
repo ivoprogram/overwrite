@@ -217,7 +217,7 @@
             this.buttonPath.Location = new System.Drawing.Point(412, 181);
             this.buttonPath.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.buttonPath.Name = "buttonPath";
-            this.buttonPath.Size = new System.Drawing.Size(28, 23);
+            this.buttonPath.Size = new System.Drawing.Size(32, 23);
             this.buttonPath.TabIndex = 21;
             this.buttonPath.Text = "...";
             this.buttonPath.UseVisualStyleBackColor = true;
@@ -226,7 +226,7 @@
             // labelProgress
             // 
             this.labelProgress.AutoSize = true;
-            this.labelProgress.Location = new System.Drawing.Point(409, 213);
+            this.labelProgress.Location = new System.Drawing.Point(411, 213);
             this.labelProgress.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelProgress.Name = "labelProgress";
             this.labelProgress.Size = new System.Drawing.Size(29, 16);
@@ -291,13 +291,13 @@
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(126, 16);
             this.label7.TabIndex = 27;
-            this.label7.Text = "Ver 1.4.1 2019-11-02";
+            this.label7.Text = "Ver 1.4.2 2019-11-07";
             // 
-            // Form1
+            // overwrite
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(452, 363);
+            this.ClientSize = new System.Drawing.Size(457, 363);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.linkLabel1);
@@ -324,7 +324,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
-            this.Name = "Form1";
+            this.Name = "overwrite";
             this.Text = "Overwrite";
             this.ResumeLayout(false);
             this.PerformLayout();
