@@ -59,9 +59,9 @@
   <Program_Info>
     <AppID>app-4000dad85b9d</AppID>
     <Program_Name>Overwrite Program</Program_Name>
-    <Program_Version>1.4</Program_Version>
+    <Program_Version>1.5</Program_Version>
     <Program_Release_Month>11</Program_Release_Month>
-    <Program_Release_Day>02</Program_Release_Day>
+    <Program_Release_Day>09</Program_Release_Day>
     <Program_Release_Year>2019</Program_Release_Year>
     <Program_Cost_Dollars>0</Program_Cost_Dollars>
     <Program_Type>Freeware</Program_Type>
@@ -73,12 +73,12 @@
     <Program_Target_Platform>Windows,Linux</Program_Target_Platform>
     <Program_OS_Support>Win2000,WinXP,Windows 8,Windows 10,WinServer,WinOther,Linux,Linux Console,Unix,Other</Program_OS_Support>
     <Program_Language>English</Program_Language>
-    <Program_Change_Info>Overwrites metadata without leaving trace for forensic software.</Program_Change_Info>
+    <Program_Change_Info>Overwrites metadata and data.</Program_Change_Info>
     <Program_System_Requirements>Windows, Linux, Unix</Program_System_Requirements>
     <Limitations>No limitations</Limitations>
     <Awards></Awards>
     <File_Info>
-      <File_Size_Bytes>416768</File_Size_Bytes>
+      <File_Size_Bytes></File_Size_Bytes>
       <File_Size_K>407</File_Size_K>
       <File_Size_MB>0.4</File_Size_MB>
     </File_Info>
@@ -104,7 +104,7 @@
       <Application_XML_File_URL>http://github.com/ivoprogram/overwrite/raw/master/info/overwrite-program.xml</Application_XML_File_URL>
     </Application_URLs>
     <Download_URLs>
-      <Primary_Download_URL>http://github.com/ivoprogram/overwrite/archive/ver1.4-2019-11-02.zip</Primary_Download_URL>
+      <Primary_Download_URL>http://github.com/ivoprogram/overwrite/archive/master.zip</Primary_Download_URL>
       <Secondary_Download_URL>http://github.com/ivoprogram/overwrite/releases/latest</Secondary_Download_URL>
       <Additional_Download_URL_1></Additional_Download_URL_1>
       <Additional_Download_URL_2></Additional_Download_URL_2>
@@ -290,8 +290,8 @@ The file system is similar to dictionary has metadata that is summary informatio
       <DP_Distributive_Enabled>TRUE</DP_Distributive_Enabled>
       <DP_Script_Base_URL>https://github.com/ivoprogram/overwrite/</DP_Script_Base_URL>
       <DP_Pad_Mask>Overwrite_pad.xml</DP_Pad_Mask>
-      <DP_Distributive_Primary_URL>http://github.com/ivoprogram/overwrite/archive/ver1.4-2019-11-02.zip</DP_Distributive_Primary_URL>
-      <DP_Distributive_Mask>ver1.4-2019-11-02.zip</DP_Distributive_Mask>
+      <DP_Distributive_Primary_URL>http://github.com/ivoprogram/overwrite/archive/master.zip</DP_Distributive_Primary_URL>
+      <DP_Distributive_Mask>master.zip</DP_Distributive_Mask>
     </General>
   </Dynamic_PAD>
 </XML_DIZ_INFO>

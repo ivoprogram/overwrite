@@ -20,7 +20,6 @@ using System.Text;
 using System.Windows.Forms;
 
 using System.IO;
-using System.Threading;
 using System.Diagnostics;
 
 
@@ -28,14 +27,13 @@ namespace overwrite_ui
 {
     public partial class overwrite : Form
     {
-
         // 
         byte[] block;           // Block data
         int bsize = 4096;       // Block size
         int dirs = 0;           // Number of dirs
         int dircont = 0;        // Counter for write and clean
         int data = 0;           // Quantity of data
-        string suffix = "00000000000000000000000000000000";    // File suffix
+        string suffix = "";    // File suffix
         string path;            // Path where to overwrite
 
         // 
@@ -104,7 +102,7 @@ namespace overwrite_ui
             if (listData.Text == "All") { data = Int32.MaxValue; }
             else { data = Convert.ToInt32(listData.Text); }
 
-            // Set path
+            //
             path = textPath.Text;
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
@@ -113,12 +111,11 @@ namespace overwrite_ui
                     path += "/";
                 }
             }
-            else
-            {
+            else {
                 if (!path.EndsWith("/"))
                 {
                     path += "/";
-                }
+                }         
             }
 
 
@@ -178,7 +175,7 @@ namespace overwrite_ui
 
                 }// for
 
-
+                Progress(100);
             }
             catch (UnauthorizedAccessException exc)
             {
@@ -186,10 +183,7 @@ namespace overwrite_ui
             }
             catch (Exception exc)
             {
-                // 
-            }
-            finally {
-                Progress(100);        
+                Progress(100);
             }
 
         }
@@ -229,53 +223,43 @@ namespace overwrite_ui
                 Directory.CreateDirectory(dpath);
 
                 // Write data
-                using (FileStream file =
-                    File.Create(fpath, 1024 * 1000 * 8, FileOptions.WriteThrough))
+                using (BinaryWriter writer =
+                    new BinaryWriter(File.Open(fpath, FileMode.Create)))
                 {
-                    using (BinaryWriter writer = new BinaryWriter(file))
+                    //
+                    for (int index = 1; index <= blocks; index++)
                     {
-                        //
-                        for (int index = 1; index <= blocks; index++)
+                        // Write
+                        writer.Write(block, 0, bsize);
+
+                        // Statistic
+                        if (blocks != Int32.MaxValue && index > blocks * prog)
                         {
-                            // Write
-                            writer.Write(block, 0, bsize);
+                            Progress(Convert.ToInt32(prog * 100));
+                            prog += 0.1F;
+                        }
 
-                            // Statistic
-                            if (blocks != Int32.MaxValue && index > blocks * prog)
-                            {
-                                Progress(Convert.ToInt32(prog * 100));
-                                prog += 0.1F;
-                            }
+                        if (blocks == Int32.MaxValue && index > blockscont && blockscont2 < 10)
+                        {
+                            blockscont += blocksgb;
+                            blockscont2++;
+                            Progress(blockscont2);
+                        }
 
-                            if (blocks == Int32.MaxValue && index > blockscont && blockscont2 < 10)
-                            {
-                                blockscont += blocksgb;
-                                blockscont2++;
-                                Progress(blockscont2);
-                            }
-
-                        }// for
-
-                    }// using
-
+                    }// for
+                    
                 }// using
+
+                // Status
+                Progress(100);
 
             }
             catch (UnauthorizedAccessException exc)
             {
                 throw;
             }
-            catch (IOException exc)
+            catch (Exception exc)
             {
-                // Disk full, no exception
-            }
-            //catch (Exception exc)
-            //{
-            //     
-            //}
-            finally
-            {                        
-                // Status
                 Progress(100);
             }
 
@@ -324,12 +308,6 @@ namespace overwrite_ui
             // Path
             string dpath = string.Format("{0}0{1}", path, suffix);
             string fpath = string.Format("{0}/0{1}", dpath, suffix);
-
-            //DateTime touched = new FileInfo(fpath).LastWriteTime;
-            //File.SetLastWriteTime(fpath, DateTime.Now);
-            //File.GetLastWriteTime(fpath);
-            //Thread.Sleep(900);
-
 
             // Clean data
             File.Delete(fpath);
@@ -393,7 +371,6 @@ namespace overwrite_ui
 
 
     }// class
-
 }//
 
 

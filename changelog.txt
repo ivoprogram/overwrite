@@ -45,8 +45,16 @@ Ivo Gjorgjievski
 
 2019-11-07 1.4.2
 Ivo Gjorgjievski
-- In overwrite.c fixed issues for special chars in path in unix as reported in issues #2
+- In overwrite.c fixed issues for special chars in path in Unix as reported in issues #2
 - FILE_PREFIX changed in FILE_SUFFIX and set it to empty, used for testing only for long file names in FAT.
 - In overwrite.cs fixed special chars in path as previous issue.
 - In overwrite.cs added path variable, textPath.Text is not used and changed directly.
+
+
+2019-11-09 1.5 
+Ivo Gjorgjievski
+- Changed parameter -dirs to -meta, and set mb as default, ex -data:10 = -data:10mb
+- Set FILE_SUFFIX to 32 chars for overwrite long file names on some file sistems.
+- Add flushing data buffers, in previous versions not worked correctly.
+
 

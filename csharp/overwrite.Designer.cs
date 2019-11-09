@@ -226,7 +226,7 @@
             // labelProgress
             // 
             this.labelProgress.AutoSize = true;
-            this.labelProgress.Location = new System.Drawing.Point(411, 213);
+            this.labelProgress.Location = new System.Drawing.Point(410, 213);
             this.labelProgress.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelProgress.Name = "labelProgress";
             this.labelProgress.Size = new System.Drawing.Size(29, 16);
@@ -289,9 +289,9 @@
             this.label7.Location = new System.Drawing.Point(20, 331);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 0, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(126, 16);
+            this.label7.Size = new System.Drawing.Size(116, 16);
             this.label7.TabIndex = 27;
-            this.label7.Text = "Ver 1.4.2 2019-11-07";
+            this.label7.Text = "Ver 1.5 2019-11-09";
             // 
             // overwrite
             // 
