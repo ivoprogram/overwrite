@@ -16,11 +16,11 @@ To protect privacy and security the remaining data on empty space on disks has t
 - It is free and open source with general public licence.
 
 **Example**
-- Write 10 dirs and 10Mb data, on Windows \
-overwrite -dirs:10 -data:10mb -path:c:\
+- Write 10 metadata and 10Mb data, on Windows \
+overwrite -meta:10 -data:10 -path:c:\
 
 - Write random data, block size 512 bytes on Linux \
-overwrite -rand -block:512 -data:10mb -path:/mnt/usbdisk/
+overwrite -rand -block:512 -data:10 -path:/mnt/usbdisk/
 
 - Run directly overwrite.c source code with Tiny C compiler \
 tcc -run overwrite.c -h
