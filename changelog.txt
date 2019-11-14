@@ -58,3 +58,13 @@ Ivo Gjorgjievski
 - Add flushing data buffers, in previous versions not worked correctly.
 
 
+2019-11-14 1.5.1 
+Ivo Gjorgjievski
+- Fixed issue with metadata remanence on FAT, EXT.
+- Metadata and data is written in destination dir not in subdir.
+- Using small files instead of dirs for metadata and data cleaning.
+- This changes were required to support different file systems and operating systems.
+
+
+
+
