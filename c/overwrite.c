@@ -6,7 +6,7 @@ CODE:			github.com/ivoprogram/overwrite
 LICENSE:		GNU General Public License v3.0 http://www.gnu.org/licenses/gpl.html
 AUTHOR:			Ivo Gjorgjievski
 WEBSITE:		ivoprogram.github.io
-VERSION:		1.5.1 2019-11-14
+VERSION:		1.5.2 2019-11-16
 
 */
 
@@ -37,8 +37,9 @@ VERSION:		1.5.1 2019-11-14
 #define SAFE_WRITE TRUE		// Check if file exists before overwrite
 #define BLOCK_SIZE 4096		// Default block size, used in NTFS EXT4
 #define PATH_LENGTH 4096	// Path buffer size
-#define FILE_SUFFIX "x-"	// File suffix
-#define VERSION "Overwrite Version 1.5.1 2019-11-14"	// Program version
+#define FILE_SUFFIX "x"	// File suffix
+#define FILE_SUFFIX2 "XXX"	// File suffix
+#define VERSION "Overwrite Version 1.5.2 2019-11-16"	// Program version
 
 
 // Arguments structure -----
@@ -62,10 +63,11 @@ struct args {
 // Headers -----
 struct args parseargs(int argc, char *argv[]);
 struct args writefiles(struct args argsv);
-struct args writedata(struct args argsv);
-struct args cleanfiles(struct args argsv);
-struct args cleandata(struct args argsv);
+struct args writefiles2(struct args argsv, const char *suffix, int data);
 int writefile(char *filepath, unsigned char *buf, int bufsize);
+struct args cleanfiles(struct args argsv, const char *suffix, int data);
+struct args writedata(struct args argsv);
+struct args cleandata(struct args argsv);
 void freemem(struct args argsv);
 
 void safecheck(struct args argsv);
@@ -80,7 +82,8 @@ int stricmp2(const char *str1, const char *str2, size_t count);
 void errmsg(struct args argsv, char *message);
 void exitmsg(struct args argsv, char *message);
 void exiterr(struct args argsv, char *message);
-void errcheck(int res, struct args argsv, char *message);
+void errcheckint(int res, struct args argsv, char *message);
+void errcheckptr(void *res, struct args argsv, char *message);
 void usage();
 
 
@@ -100,7 +103,6 @@ int main(int argc, char *argv[])
 
 	// Write files
 	argsv = writefiles(argsv);
-	if(!argsv.test){ cleanfiles(argsv); }
 
 	// Write data
 	argsv = writedata(argsv);
@@ -227,7 +229,7 @@ struct args parseargs(int argc, char *argv[])
 
 	// Initialize blockbuf with calloc, set with 0.
 	argsv.blockbuf = (unsigned char*) calloc(argsv.blocksize, sizeof (unsigned char));
-	errcheck(errno, argsv, "Block buffer initialization error. ");
+	errcheckptr(argsv.blockbuf, argsv, "Block buffer initialization error. ");
 
 	// If one, set buffer with one's
 	if(argsv.one){ memset(argsv.blockbuf, 255, argsv.blocksize);  }
@@ -240,45 +242,68 @@ struct args parseargs(int argc, char *argv[])
 
 }//
 
-
 // writefiles
 struct args writefiles(struct args argsv)
+{
+
+	// 
+	printf("Writing metadata: \n");
+
+	// Write block size files for overwrite metadata and small files
+	argsv = writefiles2(argsv, FILE_SUFFIX, TRUE);
+	if(!argsv.test){ argsv = cleanfiles(argsv, FILE_SUFFIX, TRUE); }
+
+	// Write empty files for overwrite upper case metadata entries
+	argsv = writefiles2(argsv, FILE_SUFFIX2, FALSE);
+	if(!argsv.test){ argsv = cleanfiles(argsv, FILE_SUFFIX2, FALSE); }
+
+	// 
+	return argsv;
+
+}// 
+
+
+// writefiles
+struct args writefiles2(struct args argsv, const char *suffix, int data)
 {
 	// 
 	int index = 0;		// Index
 	int res = 0;		// Response
 	float prog = 0.1F;	// Progress
 	char stri[64];		// Dir name
-
+	FILE *fp;			// File pointer
 
 	// If files 0 return
 	if(!argsv.files){ argsv.res = 0; return argsv; }
+	argsv.files2 = 0;
 
 	// Write files
-	printf("Writing metadata: \n");
-
+	//printf("Writing metadata: \n");
 	for(index = 1; index <= argsv.files; index++)
 	{
 		// Get path
-		sprintf(stri, "%d", index);
-		getpath(&argsv, stri);			
-		strcat(argsv.pathbuf, FILE_SUFFIX);
+		sprintf(stri, "%d%s", index, suffix);
+		getpath(&argsv, stri);					
+		safecheck(argsv);	// Safe write check
 
-		// Safe write check
-		safecheck(argsv);
-
-		// Writefile
-		res = writefile(argsv.pathbuf, argsv.blockbuf, argsv.blocksize);
-		argsv.files2 = index;	// Number of files written, for clean
-		if(res != 0) { 
-			errmsg(argsv, "Error writing files.");
-			argsv.res = -1;  
-			return argsv;
+		if(data)
+		{
+			// Create file with block size
+			res = writefile(argsv.pathbuf, argsv.blockbuf, argsv.blocksize);
+			errcheckint(res, argsv, "Error writing metadata file.");
+			argsv.files2 = index;	// Number of files written, for clean
 		}
-		//errcheck(res, argsv, "Error writing files.");
+		else{
+			// Create empty file 
+			fp = fopen(argsv.pathbuf, "w");
+			errcheckptr(fp, argsv, "Error creating metadata file.");
+			//syncfile(fp);
+			fclose(fp);
+			argsv.files2 = index;	// Number of files written, for clean
+		}
 
 		// Statistics
-		if(argsv.files != INT_MAX && index > argsv.files * prog)
+		if(data && index > argsv.files * prog)
 		{
 			printf("%.0f%% ", prog * 100 );
 			prog += 0.1F;
@@ -287,7 +312,7 @@ struct args writefiles(struct args argsv)
 
 	}// for
 
-	printf("100%% \n");
+	if(data){ printf("100%% \n"); }
 	argsv.res = 0;
 	return argsv;
 
@@ -309,7 +334,6 @@ int writefile(char *filepath, unsigned char *buf, int bufsize)
 	if(rest != 1){ fclose(fp); return -1; }
 
 	// Flush
-	fflush(fp);
 	syncfile(fp);
 	resi = fclose(fp);
 	if(resi == EOF){ return -1; }
@@ -359,7 +383,7 @@ struct args writedata(struct args argsv)
 
 	// Open file
 	fp = fopen(argsv.pathbuf, "wb");
-	errcheck(errno, argsv, "Error writing data file.");
+	errcheckptr(fp, argsv, "Error writing data file.");
 
 	// Write data
 	printf("Writing data: \n");
@@ -371,7 +395,6 @@ struct args writedata(struct args argsv)
 		// If error exit function, can be also disk full
 		if(rest != 1 && index > 0){ printf("100%% \n"); }
 		if(rest != 1){ 
-			fflush(fp);
 			syncfile(fp);
 			fclose(fp);
 			argsv.res = -1; 
@@ -398,7 +421,6 @@ struct args writedata(struct args argsv)
 
 	// Done
 	printf("100%% \n");
-	fflush(fp);
 	syncfile(fp);
 	fclose(fp);
 	argsv.res = 0;
@@ -408,7 +430,7 @@ struct args writedata(struct args argsv)
 
 
 // Clean files
-struct args cleanfiles(struct args argsv)
+struct args cleanfiles(struct args argsv, const char *suffix, int data)
 {
 	// 
 	int index;		// Index
@@ -419,19 +441,15 @@ struct args cleanfiles(struct args argsv)
 	// For number of files written
 	for(index = 1; index <= argsv.files2; index++)
 	{
-		// File path
-		sprintf(stri, "%d", index);
+		// Get path
+		sprintf(stri, "%d%s", index, suffix);
 		getpath(&argsv, stri);
-		strcat(argsv.pathbuf, FILE_SUFFIX);
 
-		// Truncate, remove file
+		// Truncate and remove file
 		fp = fopen(argsv.pathbuf, "w");
-		syncfile(fp);
+		//syncfile(fp);
 		fclose(fp);
 		res = remove(argsv.pathbuf);
-
-		//if(errno != 0){ argsv.res = -1; return argsv; }
-		errcheck(errno, argsv, "Error deleting file.");
 
 	}// for
 
@@ -463,9 +481,6 @@ struct args cleandata(struct args argsv)
 	syncfile(fp);
 	fclose(fp);
 	res = remove(argsv.pathbuf);
-
-	if(errno != 0){ argsv.res = -1; return argsv; }
-	//errcheck(res, argsv, "Error deleting file.");
 
 	// 
 	argsv.res = 0; 
@@ -503,8 +518,7 @@ void safecheck(struct args argsv)
 	if(SAFE_WRITE && !argsv.test && (fp = fopen(argsv.pathbuf, "r")) != NULL)
 	{
 		fclose(fp);
-		printf(
-			"File exists, clean file before overwrite, safe write is on. \n%s \n", 
+		printf("File exists, clean file before overwrite, safe write is on. \n%s \n", 
 			argsv.pathbuf);
 		exit(0);
 	}
@@ -543,9 +557,11 @@ void syncfile(FILE *fp)
 #ifdef _WIN32	//  __linux__
 	int fd = _fileno(fp);
 	HANDLE hd = (HANDLE) _get_osfhandle(fd);
+	fflush(fp);
 	FlushFileBuffers(hd);
-#else      
+#else    
 	int fd = fileno(fp);
+	fflush(fp);
 	fsync(fd);
 #endif
 
@@ -577,7 +593,6 @@ void printtime(clock_t ticks)
 // String start with, 0 false, 1 true
 int strstart(const char *str, const char *sub)
 {
-	if(str == NULL || sub == NULL){ return 0; }
 	return stricmp2(str, sub, strlen(sub)) == 0;
 }
 
@@ -585,10 +600,7 @@ int strstart(const char *str, const char *sub)
 // String end with, 0 false, 1 true
 int strend(const char *str, const char *sub)
 {
-	int sublen = 0;
-
-	if(str == NULL || sub == NULL){ return 0; }
-	sublen = (int)strlen(sub);
+	int sublen = (int)strlen(sub);
 	return stricmp2(str + strlen(str) - sublen, sub, sublen) == 0;
 }
 
@@ -626,15 +638,22 @@ void exiterr(struct args argsv, char *message)
 {
 	printf("Error %d, %s. \n%s \n", errno, strerror(errno), message);
 	freemem(argsv);
-	exit(errno);
+	exit(-1);
 
 }// 
 
 
 // Check error integer
-void errcheck(int res, struct args argsv, char *message)
+void errcheckint(int res, struct args argsv, char *message)
 {
 	if(res == -1){ exiterr(argsv, message); }
+}// 
+
+
+// Check error pointer
+void errcheckptr(void *res, struct args argsv, char *message)
+{
+	if(res == NULL){ exiterr(argsv, message); }
 }// 
 
 
