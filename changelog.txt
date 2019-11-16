@@ -66,5 +66,11 @@ Ivo Gjorgjievski
 - This changes were required to support different file systems and operating systems.
 
 
+2019-11-16 1.5.2
+Ivo Gjorgjievski
+- Fixed issue with metadata remanence on FAT, EXT.
+- Also upper case, and long file names are cleaned.
+
+
 
 
