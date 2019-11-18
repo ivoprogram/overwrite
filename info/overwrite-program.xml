@@ -71,14 +71,14 @@
     <Program_Release_Status>New Release</Program_Release_Status>
     <Program_Install_Support>No Install Support</Program_Install_Support>
     <Program_Target_Platform>Windows,Linux</Program_Target_Platform>
-    <Program_OS_Support>Win2000,WinXP,Windows 8,Windows 10,WinServer,WinOther,Linux,Linux Console,Unix,Other</Program_OS_Support>
+    <Program_OS_Support>Win2000,Win7 x32,Win7 x64,WinOther,WinServer,WinVista,WinVista x64,WinXP,Linux,Linux Console,Linux Gnome,Linux Open Source,Other</Program_OS_Support>
     <Program_Language>English</Program_Language>
     <Program_Change_Info>Overwrites metadata and data.</Program_Change_Info>
     <Program_System_Requirements>Windows, Linux, Unix</Program_System_Requirements>
     <Limitations>No limitations</Limitations>
     <Awards></Awards>
     <File_Info>
-      <File_Size_Bytes></File_Size_Bytes>
+      <File_Size_Bytes>432430</File_Size_Bytes>
       <File_Size_K>407</File_Size_K>
       <File_Size_MB>0.4</File_Size_MB>
     </File_Info>
@@ -99,7 +99,7 @@
     <Application_URLs>
       <Application_Info_URL>http://ivoprogram.github.io/?content=overwrite.html</Application_Info_URL>
       <Application_Order_URL>http://ivoprogram.github.io/?content=overwrite.html</Application_Order_URL>
-      <Application_Screenshot_URL>http://ivoprogram.github.io/images/overwrite-windows-ui.png</Application_Screenshot_URL>
+      <Application_Screenshot_URL>http://raw.githubusercontent.com/ivoprogram/overwrite/master/images/overwrite-windows-ui.png</Application_Screenshot_URL>
       <Application_Icon_URL>http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/32/Actions-document-edit-icon.png</Application_Icon_URL>
       <Application_XML_File_URL>http://github.com/ivoprogram/overwrite/raw/master/info/overwrite-program.xml</Application_XML_File_URL>
     </Application_URLs>
@@ -291,7 +291,7 @@ The file system is similar to dictionary has metadata that is summary informatio
       <DP_Script_Base_URL>https://github.com/ivoprogram/overwrite/</DP_Script_Base_URL>
       <DP_Pad_Mask>Overwrite_pad.xml</DP_Pad_Mask>
       <DP_Distributive_Primary_URL>http://github.com/ivoprogram/overwrite/archive/master.zip</DP_Distributive_Primary_URL>
-      <DP_Distributive_Mask>master.zip</DP_Distributive_Mask>
+      <DP_Distributive_Mask>overwrite-program.zip</DP_Distributive_Mask>
     </General>
   </Dynamic_PAD>
 </XML_DIZ_INFO>
