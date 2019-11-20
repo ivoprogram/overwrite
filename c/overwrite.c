@@ -6,7 +6,7 @@ CODE:			github.com/ivoprogram/overwrite
 LICENSE:		GNU General Public License v3.0 http://www.gnu.org/licenses/gpl.html
 AUTHOR:			Ivo Gjorgjievski
 WEBSITE:		ivoprogram.github.io
-VERSION:		1.5.2 2019-11-16
+VERSION:		1.5.3 2019-11-20
 
 */
 
@@ -37,9 +37,10 @@ VERSION:		1.5.2 2019-11-16
 #define SAFE_WRITE TRUE		// Check if file exists before overwrite
 #define BLOCK_SIZE 4096		// Default block size, used in NTFS EXT4
 #define PATH_LENGTH 4096	// Path buffer size
-#define FILE_SUFFIX "x"	// File suffix
-#define FILE_SUFFIX2 "XXX"	// File suffix
-#define VERSION "Overwrite Version 1.5.2 2019-11-16"	// Program version
+#define FILE_LENGTH 6		// Temp file name length 
+#define FILE_SUFFIX "xX"	// File suffix
+#define FILE_SUFFIX2 "Y"	// File suffix
+#define VERSION "Overwrite Version 1.5.3 2019-11-20"	// Program version
 
 
 // Arguments structure -----
@@ -64,10 +65,10 @@ struct args {
 struct args parseargs(int argc, char *argv[]);
 struct args writefiles(struct args argsv);
 struct args writefiles2(struct args argsv, const char *suffix, int data);
-int writefile(char *filepath, unsigned char *buf, int bufsize);
-struct args cleanfiles(struct args argsv, const char *suffix, int data);
 struct args writedata(struct args argsv);
-struct args cleandata(struct args argsv);
+int writefile(char *filepath, unsigned char *buf, int bufsize);
+void cleanfiles(struct args argsv, const char *suffix, int data);
+void cleandata(struct args argsv);
 void freemem(struct args argsv);
 
 void safecheck(struct args argsv);
@@ -106,6 +107,7 @@ int main(int argc, char *argv[])
 
 	// Write data
 	argsv = writedata(argsv);
+
 	if(!argsv.test){ cleandata(argsv); }
 
 	// Clean memory
@@ -245,17 +247,20 @@ struct args parseargs(int argc, char *argv[])
 // writefiles
 struct args writefiles(struct args argsv)
 {
-
 	// 
 	printf("Writing metadata: \n");
 
 	// Write block size files for overwrite metadata and small files
 	argsv = writefiles2(argsv, FILE_SUFFIX, TRUE);
-	if(!argsv.test){ argsv = cleanfiles(argsv, FILE_SUFFIX, TRUE); }
+	if(!argsv.test){ 
+		cleanfiles(argsv, FILE_SUFFIX, TRUE);
+	}
 
 	// Write empty files for overwrite upper case metadata entries
 	argsv = writefiles2(argsv, FILE_SUFFIX2, FALSE);
-	if(!argsv.test){ argsv = cleanfiles(argsv, FILE_SUFFIX2, FALSE); }
+	if(!argsv.test){ 
+		cleanfiles(argsv, FILE_SUFFIX2, FALSE); 
+	}
 
 	// 
 	return argsv;
@@ -269,38 +274,39 @@ struct args writefiles2(struct args argsv, const char *suffix, int data)
 	// 
 	int index = 0;		// Index
 	int res = 0;		// Response
+	int cont = 0;		// Counter for file name
 	float prog = 0.1F;	// Progress
 	char stri[64];		// Dir name
-	FILE *fp;			// File pointer
 
 	// If files 0 return
 	if(!argsv.files){ argsv.res = 0; return argsv; }
-	argsv.files2 = 0;
+	argsv.files2 = 0;	// Number of files written, for clean
 
 	// Write files
 	//printf("Writing metadata: \n");
 	for(index = 1; index <= argsv.files; index++)
 	{
 		// Get path
-		sprintf(stri, "%d%s", index, suffix);
+		sprintf(stri, "%d%s", index, "");
 		getpath(&argsv, stri);					
-		safecheck(argsv);	// Safe write check
 
-		if(data)
-		{
-			// Create file with block size
+		for(cont = 0; cont <= (index % FILE_LENGTH); cont++){ 
+			strcat(argsv.pathbuf, suffix);  
+		}
+
+		// Safe write check
+		safecheck(argsv);	
+
+		// Create file block size, or empty
+		if(data){
 			res = writefile(argsv.pathbuf, argsv.blockbuf, argsv.blocksize);
-			errcheckint(res, argsv, "Error writing metadata file.");
-			argsv.files2 = index;	// Number of files written, for clean
 		}
 		else{
-			// Create empty file 
-			fp = fopen(argsv.pathbuf, "w");
-			errcheckptr(fp, argsv, "Error creating metadata file.");
-			//syncfile(fp);
-			fclose(fp);
-			argsv.files2 = index;	// Number of files written, for clean
+			res = writefile(argsv.pathbuf, argsv.blockbuf, 0);
 		}
+
+		errcheckint(res, argsv, "Error writing metadata file.");
+		argsv.files2 = index;	// Number of files written, for clean
 
 		// Statistics
 		if(data && index > argsv.files * prog)
@@ -318,6 +324,7 @@ struct args writefiles2(struct args argsv, const char *suffix, int data)
 
 }//
 
+
 // writefile
 int writefile(char *filepath, unsigned char *buf, int bufsize)
 {
@@ -330,10 +337,12 @@ int writefile(char *filepath, unsigned char *buf, int bufsize)
 	if(fp == NULL){ return -1; }
 
 	// Write one block
-	rest = fwrite(buf, bufsize, 1, fp);
-	if(rest != 1){ fclose(fp); return -1; }
+	if(bufsize > 0){
+		rest = fwrite(buf, bufsize, 1, fp);
+		if(rest != 1){ fclose(fp); return -1; }
+	}
 
-	// Flush
+	// 
 	syncfile(fp);
 	resi = fclose(fp);
 	if(resi == EOF){ return -1; }
@@ -392,8 +401,11 @@ struct args writedata(struct args argsv)
 		// write block
 		rest = fwrite(argsv.blockbuf, argsv.blocksize, 1, fp);
 
-		// If error exit function, can be also disk full
-		if(rest != 1 && index > 0){ printf("100%% \n"); }
+		// If error or disk full exit function
+		if(rest != 1 && index > 0){ 
+			printf("100%% \n"); 
+		}
+
 		if(rest != 1){ 
 			syncfile(fp);
 			fclose(fp);
@@ -402,16 +414,14 @@ struct args writedata(struct args argsv)
 		}
 
 		// Statistics
-		if(blocks != INT_MAX && index > blocks * prog)
-		{
+		if(blocks != INT_MAX && index > blocks * prog){
 			printf("%.0f%% ", prog * 100 );
 			prog += 0.1;
 
 		}// if
 
 		// Statistics for -data:all argument, up to 10gb
-		if(blocks == INT_MAX && index >= blockscont && blockscont2 < 10)
-		{
+		if(blocks == INT_MAX && index >= blockscont && blockscont2 < 10){
 			blockscont += blocksgb;
 			blockscont2++;
 			printf("%dGb ", blockscont2 );
@@ -430,61 +440,59 @@ struct args writedata(struct args argsv)
 
 
 // Clean files
-struct args cleanfiles(struct args argsv, const char *suffix, int data)
+void cleanfiles(struct args argsv, const char *suffix, int data)
 {
 	// 
 	int index;		// Index
+	int cont = 0;		// Counter for file name
 	int res;		// Response
 	char stri[64];	// Name
 	FILE *fp;		// File pointer
 
-	// For number of files written
-	for(index = 1; index <= argsv.files2; index++)
-	{
-		// Get path
-		sprintf(stri, "%d%s", index, suffix);
-		getpath(&argsv, stri);
 
-		// Truncate and remove file
+	// For number of files written
+	for(index = 1; index <= argsv.files2; index++){
+
+		// Get path
+		sprintf(stri, "%d%s", index, "");
+		getpath(&argsv, stri);					
+
+		for(cont = 0; cont <= (index % FILE_LENGTH); cont++){ 
+			strcat(argsv.pathbuf, suffix);  
+		}
+
+		// Remove file
 		fp = fopen(argsv.pathbuf, "w");
-		//syncfile(fp);
+		syncfile(fp);
 		fclose(fp);
 		res = remove(argsv.pathbuf);
 
 	}// for
 
-	// 
-	argsv.res = 0; 
-	return argsv;
-
 }//
 
 
 // Clean data
-struct args cleandata(struct args argsv)
+void cleandata(struct args argsv)
 {
 	// 
-	int res;					// Response
-	char stri[64];				// Name
-	FILE *fp;
+	int res;		// Response
+	char stri[64];	// Name
+	FILE *fp;		// File pointer
 
 	// If no data written return
-	if(argsv.data == 0){ argsv.res = 0; return argsv; }
+	if(argsv.data == 0){ argsv.res = 0; }
 
 	// File path
 	sprintf(stri, "%d", 0);
 	getpath(&argsv, stri);
 	strcat(argsv.pathbuf, FILE_SUFFIX);
 
-	// Truncate, remove data file
+	// Remove data file
 	fp = fopen(argsv.pathbuf, "w");
 	syncfile(fp);
 	fclose(fp);
 	res = remove(argsv.pathbuf);
-
-	// 
-	argsv.res = 0; 
-	return argsv;
 
 }//
 
@@ -532,8 +540,7 @@ void randbuf(unsigned char *buf, int bufsize)
 	int index;
 	srand((unsigned)time(NULL));	// Init rand
 
-	for(index = 0; index < bufsize - 1; index++)
-	{
+	for(index = 0; index < bufsize - 1; index++){
 		buf[index] = rand() % 256; // 
 	}
 }
@@ -554,12 +561,19 @@ void getpath(struct args *argsv, const char *prefix)
 // Sync file buffer to disk, windows linux
 void syncfile(FILE *fp)
 {
-#ifdef _WIN32	//  __linux__
-	int fd = _fileno(fp);
-	HANDLE hd = (HANDLE) _get_osfhandle(fd);
-	fflush(fp);
-	FlushFileBuffers(hd);
-#else    
+
+#ifdef _WIN32
+	int res = 0;
+	int fd = 0; 
+	HANDLE hd = NULL;
+
+	fd = _fileno(fp);
+	hd = (HANDLE) _get_osfhandle(fd);
+	res = fflush(fp);
+	res = FlushFileBuffers(hd);
+	//printf("%d \n", res);
+
+#else	//  __linux__
 	int fd = fileno(fp);
 	fflush(fp);
 	fsync(fd);
