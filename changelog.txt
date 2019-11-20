@@ -72,5 +72,10 @@ Ivo Gjorgjievski
 - Also upper case, and long file names are cleaned.
 
 
+2019-11-20 1.5.3
+Ivo Gjorgjievski
+- Temporary files names are written in different pattern, fixed issue with metadata remanence on FAT, EXT on new tests.
+
+
 
 
