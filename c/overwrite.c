@@ -6,7 +6,7 @@ CODE:			github.com/ivoprogram/overwrite
 LICENSE:		GNU General Public License v3.0 http://www.gnu.org/licenses/gpl.html
 AUTHOR:			Ivo Gjorgjievski
 WEBSITE:		ivoprogram.github.io
-VERSION:		1.6 2019-11-21
+VERSION:		1.6.1 2019-11-21
 
 */
 
@@ -37,9 +37,9 @@ VERSION:		1.6 2019-11-21
 #define SAFE_WRITE TRUE		// Check if file exists before overwrite
 #define BLOCK_SIZE 4096		// Default block size, used in NTFS EXT4
 #define PATH_LENGTH 4096	// Path buffer size
-#define FILE_SUFFIX "x"		// File suffix
-#define FILE_SUFFIX2 "Y"	// File suffix
-#define VERSION "Overwrite Version 1.6 2019-11-21"	// Program version
+#define FILE_SUFFIX "xxxxx"		// File suffix
+#define FILE_SUFFIX2 "X"	// File suffix
+#define VERSION "Overwrite Version 1.6.1 2019-11-21"	// Program version
 
 
 // Arguments structure -----
