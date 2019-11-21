@@ -84,4 +84,6 @@ Ivo Gjorgjievski
 - Created release of this version
 
 
-
+2019-11-21 1.6.1
+Ivo Gjorgjievski
+- Write different pattern in metadata file names.
