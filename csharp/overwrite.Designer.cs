@@ -64,7 +64,7 @@
             // checkTest
             // 
             this.checkTest.AutoSize = true;
-            this.checkTest.Location = new System.Drawing.Point(308, 23);
+            this.checkTest.Location = new System.Drawing.Point(309, 24);
             this.checkTest.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkTest.Name = "checkTest";
             this.checkTest.Size = new System.Drawing.Size(56, 20);
@@ -291,7 +291,7 @@
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(116, 16);
             this.label7.TabIndex = 27;
-            this.label7.Text = "Ver 1.5 2019-11-09";
+            this.label7.Text = "Ver 1.6 2019-11-21";
             // 
             // overwrite
             // 

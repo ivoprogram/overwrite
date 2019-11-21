@@ -6,7 +6,7 @@ CODE:			github.com/ivoprogram/overwrite
 LICENSE:		GNU General Public License v3.0 http://www.gnu.org/licenses/gpl.html
 AUTHOR:			Ivo Gjorgjievski
 WEBSITE:		ivoprogram.github.io
-VERSION:		1.5 2019-11-09
+VERSION:		1.6 2019-11-21
 
 */
 
@@ -30,13 +30,16 @@ namespace overwrite_ui
     {
 
         // 
-        byte[] block;           // Block data
-        int bsize = 4096;       // Block size
-        int dirs = 0;           // Number of dirs
-        int dircont = 0;        // Counter for write and clean
-        int data = 0;           // Quantity of data
-        string suffix = "00000000000000000000000000000000";    // File suffix
+        const bool SAFE_WRITE = true;       // Check if file exists before overwrite
+        const string FILE_SUFFIX = "x";     // File suffix
+        const string FILE_SUFFIX2 = "Y";    // File suffix
+        int blocksize = 4096;               // Block size
+
+        int files = 0;          // Number of files
+        int filecont = 0;       // Counter for write and clean
+        int data = 0;           // Quantity of data to write
         string path;            // Path where to overwrite
+        byte[] blockbuf;        // Block buffer
 
         // 
         public overwrite()
@@ -66,6 +69,7 @@ namespace overwrite_ui
         {
             try
             {
+
                 // Start
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
@@ -74,32 +78,34 @@ namespace overwrite_ui
                 // Prepare 
                 Prepare();
 
+                // Write files
+                WriteFiles();
+
                 // Write data
                 WriteData();
                 if (!checkTest.Checked) { CleanData(); }
-
-                // Write dirs
-                WriteDirs();
-                if (!checkTest.Checked) { CleanDirs(); }
 
                 // Done
                 stopwatch.Stop();
                 WriteTime(stopwatch);
                 richTextBox1.AppendText(" Done. \n");
 
+
             }
             catch (Exception exc)
             {
                 richTextBox1.AppendText(" " + exc.Message);
             }
+
         }// 
+
 
         // Initialize parameters
         private void Prepare()
         {
-            bsize = Convert.ToInt32(listBlock.Text);
-            block = new byte[bsize];
-            dirs = Convert.ToInt32(listFiles.Text);
+            blocksize = Convert.ToInt32(listBlock.Text);
+            blockbuf = new byte[blocksize];
+            files = Convert.ToInt32(listFiles.Text);
 
             if (listData.Text == "All") { data = Int32.MaxValue; }
             else { data = Convert.ToInt32(listData.Text); }
@@ -125,52 +131,77 @@ namespace overwrite_ui
             // Set data content
             if (listContent.Text == "Zero")
             {
-                for (int index = 0; index < bsize; index++)
+                for (int index = 0; index < blocksize; index++)
                 {
-                    block[index] = 0;
+                    blockbuf[index] = 0;
                 }
             }
             else if (listContent.Text == "One")
             {
-                for (int index = 0; index < bsize; index++)
+                for (int index = 0; index < blocksize; index++)
                 {
-                    block[index] = 255;
+                    blockbuf[index] = 255;
                 }
             }
             else // if (listContent.Text == "Random")
             {
                 Random rand = new Random(DateTime.Now.Millisecond);
-                for (int index = 0; index < bsize; index++)
+                for (int index = 0; index < blocksize; index++)
                 {
-                    block[index] = (byte)rand.Next(1, 256);
+                    blockbuf[index] = (byte)rand.Next(1, 255);
                 }
             }
 
         }// 
 
-        // Write directories
-        private void WriteDirs()
-        {
-            float prog = 0.1F; // Progress
 
-            if (dirs == 0) { return; }
+        // Write files
+        private void WriteFiles()
+        {
+            if (files == 0) { return; }
+
+            richTextBox1.AppendText(" Writing metadata \n");
+            Progress(0);
+
+            WriteFiles(FILE_SUFFIX, true);
+            if (!checkTest.Checked) { CleanFiles(FILE_SUFFIX); }
+
+            WriteFiles(FILE_SUFFIX2, false);
+            if (!checkTest.Checked) { CleanFiles(FILE_SUFFIX2); }
+
+        }// 
+
+
+        // Write files
+        private void WriteFiles(string suffix, bool data)
+        {
+            string fpath = "";
+            float prog = 0.1F; // Progress
+            byte[] empty = new byte[0];
 
             try
             {
-                // Status
-                richTextBox1.AppendText(" Writing metadata \n");
-                Progress(0);
-
-                // Write dirs
-                for (dircont = 1; dircont <= dirs; dircont++)
+                // Write files
+                for (filecont = 1; filecont <= files; filecont++)
                 {
                     // Write
-                    Directory.CreateDirectory(
-                        string.Format("{0}{1}{2}", path, dircont, suffix)
-                        );
+                    if (data)
+                    {
+                        // Create file blockbuf size
+                        fpath = string.Format("{0}{1}{2}", path, filecont, suffix);
+                        SafeCheck(fpath);
+                        WriteFile(fpath, blockbuf);
+                    }
+                    else
+                    {
+                        // Create empty file
+                        fpath = string.Format("{0}{1}{2}", path, filecont, suffix);
+                        SafeCheck(fpath);
+                        WriteFile(fpath, empty);
+                    }
 
                     // Statistic
-                    if (dirs != Int32.MaxValue && dircont > dirs * prog)
+                    if (data && filecont > files * prog)
                     {
                         Progress(Convert.ToInt32(prog * 100));
                         prog += 0.1F;
@@ -184,15 +215,33 @@ namespace overwrite_ui
             {
                 throw;
             }
-            catch (Exception exc)
+            finally
             {
-                // 
-            }
-            finally {
-                Progress(100);        
+                Progress(100);
             }
 
+        }// 
+
+
+        // WriteFile
+        private void WriteFile(string path, byte[] data)
+        {
+
+            using (FileStream stream = new FileStream(
+                path,
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.None, 4096,
+                FileOptions.WriteThrough))
+            {
+                using (BinaryWriter writer = new BinaryWriter(stream))
+                {
+                    writer.Write(data);
+                }// using
+            }// using
+
         }
+
 
         // Write data
         private void WriteData()
@@ -211,8 +260,8 @@ namespace overwrite_ui
             Progress(0);
 
             // Blocks count
-            blocksmb = (1024 * 1000) / bsize;
-            blocksgb = (1024 * 1000 * 1000) / bsize;
+            blocksmb = (1024 * 1000) / blocksize;
+            blocksgb = (1024 * 1000 * 1000) / blocksize;
             blockscont = blocksgb;
 
             if (data == Int32.MaxValue) { blocks = Int32.MaxValue; }
@@ -220,17 +269,16 @@ namespace overwrite_ui
             else if (listUnit.Text == "Gigabytes") { blocks = data * blocksgb; }
 
             // Path
-            string dpath = string.Format("{0}0{1}", path, suffix);
-            string fpath = string.Format("{0}/0{1}", dpath, suffix);
+            string fpath = string.Format("{0}{1}{2}", path, 0, FILE_SUFFIX);
+            SafeCheck(fpath);
 
             try
             {
-                // Create temp dir for data file
-                Directory.CreateDirectory(dpath);
-
                 // Write data
+                //using (BinaryWriter writer =
+                //    new BinaryWriter(File.Open(fpath, FileMode.Create)))
                 using (FileStream file =
-                    File.Create(fpath, 1024 * 1000 * 8, FileOptions.WriteThrough))
+                       File.Create(fpath, 1024 * 1000, FileOptions.WriteThrough))
                 {
                     using (BinaryWriter writer = new BinaryWriter(file))
                     {
@@ -238,7 +286,7 @@ namespace overwrite_ui
                         for (int index = 1; index <= blocks; index++)
                         {
                             // Write
-                            writer.Write(block, 0, bsize);
+                            writer.Write(blockbuf, 0, blocksize);
 
                             // Statistic
                             if (blocks != Int32.MaxValue && index > blocks * prog)
@@ -257,8 +305,9 @@ namespace overwrite_ui
                         }// for
 
                     }// using
-
                 }// using
+
+                Progress(100);
 
             }
             catch (UnauthorizedAccessException exc)
@@ -268,15 +317,11 @@ namespace overwrite_ui
             catch (IOException exc)
             {
                 // Disk full, no exception
-            }
-            //catch (Exception exc)
-            //{
-            //     
-            //}
-            finally
-            {                        
-                // Status
                 Progress(100);
+
+            }
+            finally
+            {
             }
 
 
@@ -284,7 +329,7 @@ namespace overwrite_ui
 
 
         // Clean directories
-        private void CleanDirs()
+        private void CleanFiles(string suffix)
         {
             // 
             int index = 0;
@@ -292,19 +337,17 @@ namespace overwrite_ui
 
             //richTextBox1.AppendText("Cleaning \n");
             //Progress(0);
+            if (files < 1) { return; }
 
-            // Clean dirs
-            for (index = 1; index < dircont && dirs > 0; index++)
+            // Clean files
+            for (index = 1; index < filecont; index++)
             {
-                Directory.Delete(
-                    string.Format("{0}{1}{2}", path, index, suffix)
-                    );
-
-                //File.Delete(string.Format("{0}{1}{2}", 
-                //    path, suffix, index));
+                string fpath = string.Format("{0}{1}{2}", path, index, suffix);
+                File.Open(fpath, FileMode.Truncate).Close();
+                File.Delete(fpath);
 
                 //// Statistic
-                //if (dircont > dirs * prog)
+                //if (filecont > files * prog)
                 //{
                 //    Progress(Convert.ToInt32(prog * 100));
                 //    prog += 0.1F;
@@ -321,21 +364,28 @@ namespace overwrite_ui
         {
             if (data == 0) { return; }
 
-            // Path
-            string dpath = string.Format("{0}0{1}", path, suffix);
-            string fpath = string.Format("{0}/0{1}", dpath, suffix);
-
-            //DateTime touched = new FileInfo(fpath).LastWriteTime;
-            //File.SetLastWriteTime(fpath, DateTime.Now);
-            //File.GetLastWriteTime(fpath);
-            //Thread.Sleep(900);
-
-
             // Clean data
+            string fpath = string.Format("{0}{1}{2}", path, 0, FILE_SUFFIX);
+            File.Open(fpath, FileMode.Truncate).Close();
             File.Delete(fpath);
-            Directory.Delete(dpath);
 
         }// 
+
+
+        // Check if file exists befor overwrite
+        private void SafeCheck(string path)
+        {
+            if (SAFE_WRITE && !checkTest.Checked && File.Exists(path))
+            {
+                string msg = string.Format(
+                    "File exists, clean file before overwrite, safe write is on. \n{0} \n",
+                    path
+                    );
+
+                throw new ApplicationException(msg);
+            }
+        }
+
 
         // WriteTime
         private void WriteTime(Stopwatch stopwatch)

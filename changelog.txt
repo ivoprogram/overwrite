@@ -77,5 +77,11 @@ Ivo Gjorgjievski
 - Temporary files names are written in different pattern, fixed issue with metadata remanence on FAT, EXT on new tests.
 
 
+2019-11-21 1.6
+Ivo Gjorgjievski
+- Temporary file names pattern set to normal, tests passed.
+- User interface overwrite.cs updated same as overwrite.c
+- Created release of this version
+
 
 
