@@ -59,7 +59,7 @@
   <Program_Info>
     <AppID>app-4000dad85b9d</AppID>
     <Program_Name>Overwrite Program</Program_Name>
-    <Program_Version>1.5</Program_Version>
+    <Program_Version>1.6</Program_Version>
     <Program_Release_Month>11</Program_Release_Month>
     <Program_Release_Day>09</Program_Release_Day>
     <Program_Release_Year>2019</Program_Release_Year>
@@ -105,7 +105,7 @@
     </Application_URLs>
     <Download_URLs>
       <Primary_Download_URL>http://github.com/ivoprogram/overwrite/archive/master.zip</Primary_Download_URL>
-      <Secondary_Download_URL>http://github.com/ivoprogram/overwrite/archive/ver1.5-2019-11-09.zip</Secondary_Download_URL>
+      <Secondary_Download_URL>http://github.com/ivoprogram/overwrite/archive/ver1.6-2019-11-21.zip</Secondary_Download_URL>
       <Additional_Download_URL_1></Additional_Download_URL_1>
       <Additional_Download_URL_2></Additional_Download_URL_2>
     </Download_URLs>
